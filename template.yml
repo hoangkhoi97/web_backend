@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Example Pet Store API written with SpringBoot with the aws-serverless-java-container library
+
+Globals:
+  Api:
+    # API Gateway regional endpoints
+    # EndpointConfiguration: REGIONAL
+    Timeout: 30
+
+Resources:
+  WebNewsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.backend.WebNewsBackend.StreamLambdaHandler::handleRequest
+      Runtime: java11
+      CodeUri: .
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-021afdef915b24823
+        SubNetsIds:
+          - subnet-073082f96cc954234
+          - subnet-0bd030b02e91e8f48
+          - subnet-08f986c3e4c582dcf
+          - subnet-046d47b07af6e1624
+          - subnet-0628cc1cdd3ee0572
+          - subnet-0931c9409d7b372f7
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+      Events:
+        HttpApiEvent:
+#          Type: HttpApi
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+#            TimeoutInMillis: 20000
+#            PayloadFormatVersion: '1.0'
+
+#Outputs:
+#  SpringBootPetStoreApi:
+#    Description: URL for application
+#    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/WebNewsBackend'
+#    Export:
+#      Name: WebNewsBackend
